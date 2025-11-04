@@ -19,7 +19,11 @@
   },
   "homepage": "https://github.com/Medido1/Blog_API#readme",
   "dependencies": {
+    "@prisma/client": "^6.18.0",
     "express": "^5.1.0",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
   }
 }

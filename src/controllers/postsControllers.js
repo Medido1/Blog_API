@@ -1,3 +1,6 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
 let posts = [
   {id: 1, title: "post1", content: "hello world"},
   {id: 2, title: "post2", content: "Goobye cruel world"}
