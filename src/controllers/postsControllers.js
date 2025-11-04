@@ -1,18 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-let posts = [
+/* let posts = [
   {id: 1, title: "post1", content: "hello world"},
   {id: 2, title: "post2", content: "Goobye cruel world"}
 ];
-
-export const getPosts = (req, res, next) => {
+ */
+export const getPosts = async (req, res, next) => {
+  let posts = [];
   try {
-    if (!posts) {
-      const error = new Error('Posts data not available');
-      error.status = 500;
-      throw(error)
-    }
+    posts = await prisma.post.findMany();
 
     if (posts.length === 0) {
       const error = new Error('No posts found');
@@ -26,10 +23,11 @@ export const getPosts = (req, res, next) => {
   }
 };
 
-export const getPostById = (req, res, next) => {
+export const getPostById = async (req, res, next) => {
   const id = parseInt(req.params.id);
-  const targetPost = posts.find(post => post.id === id);
-
+  const targetPost = await prisma.post.findUnique({
+    where: {id}
+  })
   if (!targetPost) {
     const error = new Error(`There is no post with the id: ${id}`);
     error.status = 404;
@@ -38,46 +36,73 @@ export const getPostById = (req, res, next) => {
   return res.status(200).json(targetPost)
 };
 
-export const submitPost = (req, res, next) => {
+export const submitPost = async (req, res, next) => {
   try {
-    const newPost = {
-      id: posts.length + 1,
-      title: req.body.title,
-      content: req.body.content
-    };
+    const {title, content} = req.body;
+    const newPost = await prisma.post.create({
+     data: {
+      title,
+      content
+     }
+    });
 
-    posts.push(newPost);
     res.status(201).json(newPost);
   } catch (error) {
     next(error)
   }
 };
 
-export const updatePost = (req, res, next) => {
+export const updatePost = async (req, res, next) => {
   const id = parseInt(req.params.id);
-  const targetPost = posts.find(post => post.id === id);
+  const {title, content} = req.body;
 
-  if (!targetPost) {
-    const error  = new Error(`a post with the id of ${id} not found`);
-    error.status = 404;
-    return next(error);
-  };
-
-  targetPost.title = req.body.title;
-  targetPost.content = req.body.content;
-  res.status(202).json(targetPost);
+  try {
+    const targetPost = await prisma.post.findUnique({
+      where: {id}
+    });
+  
+    if (!targetPost) {
+      const error  = new Error(`a post with the id of ${id} not found`);
+      error.status = 404;
+      return next(error);
+    };
+  
+    const updatedPost = await prisma.post.update({
+      where: {id},
+      data: {
+        title,
+        content
+      }
+    });
+  
+    res.status(202).json(updatedPost);
+  } catch (error) {
+    next(error)
+  }
 };
 
-export const deletePost = (req, res, next) => {
+export const deletePost = async (req, res, next) => {
   const id = parseInt(req.params.id);
-  const targetPost = posts.find(post => post.id === id);
 
-  if (!targetPost) {
-    const error  = new Error(`a post with the id of ${id} not found`);
-    error.status = 404;
-    return next(error);
-  };
+  try {
+    const targetPost = await prisma.post.findUnique({
+      where: {id}
+    });
 
-  posts = posts.filter(post => post.id !== id);
-  res.status(200).json({ message: `Post ${id} deleted`, posts });
+    if (!targetPost) {
+      const error  = new Error(`a post with the id of ${id} not found`);
+      error.status = 404;
+      throw error;
+    };
+    
+    const deleted = await prisma.post.delete({
+      where: {id}
+    });
+    res.status(200).json({
+      message: `Post ${id} deleted successfully`,
+      deletedPost: deleted
+    });
+  } catch (error) {
+    next(error)
+  }
 };
