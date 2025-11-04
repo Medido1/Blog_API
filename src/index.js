@@ -1,5 +1,6 @@
 import express from 'express';
 import postsRouter from './routes/postsRouter.js';
+import usersRouter from './routes/usersRouter.js';
 import passport from './config/passport.js';
 import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
@@ -32,7 +33,9 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/', postsRouter);
+
+app.use('/posts', postsRouter);
+app.use('/users', usersRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

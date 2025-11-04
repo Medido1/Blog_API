@@ -8,10 +8,10 @@ from '../controllers/postsControllers.js';
 
 const postsRouter = Router();
 
-postsRouter.get('/posts', getPosts);
-postsRouter.get('/posts/:id', getPostById);
-postsRouter.post('/posts', validatePost, submitPost);
-postsRouter.put('/posts/:id', validatePost, updatePost);
-postsRouter.delete('/posts/:id', deletePost);
+postsRouter.get('/', getPosts);
+postsRouter.get('/:id', getPostById);
+postsRouter.post('/', validatePost, submitPost);
+postsRouter.put('/:id', validatePost, updatePost);
+postsRouter.delete('/:id', deletePost);
 
 export default postsRouter;
