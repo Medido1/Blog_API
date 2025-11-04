@@ -17,7 +17,7 @@ postsRouter.get('/posts', (req, res, next) => {
 
     if (posts.length === 0) {
       const error = new Error('No posts found');
-      error.status = 400;
+      error.status = 404;
       throw error
     }
 
@@ -25,6 +25,19 @@ postsRouter.get('/posts', (req, res, next) => {
   } catch (error) {
     next(error)
   }
+});
+
+postsRouter.get('/posts/:id', (req, res, next) => {
+  const id = parseInt(req.params.id);
+  const targetPost = posts.find(post => post.id === id);
+
+  if (!targetPost) {
+    const error = new Error(`There is no post with the id: ${id}`);
+    error.status = 404;
+    return next(error); // pass to global error handler
+  }
+
+  return res.status(200).json(targetPost)
 });
 
 export default postsRouter;
