@@ -1,11 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from '../prismaClient.js';
 
-/* let posts = [
-  {id: 1, title: "post1", content: "hello world"},
-  {id: 2, title: "post2", content: "Goobye cruel world"}
-];
- */
 export const getPosts = async (req, res, next) => {
   let posts = [];
   try {
@@ -42,7 +36,8 @@ export const submitPost = async (req, res, next) => {
     const newPost = await prisma.post.create({
      data: {
       title,
-      content
+      content,
+      userId : 1 //to be changed
      }
     });
 
