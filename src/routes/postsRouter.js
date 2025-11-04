@@ -40,4 +40,29 @@ postsRouter.get('/posts/:id', (req, res, next) => {
   return res.status(200).json(targetPost)
 });
 
+postsRouter.post('/posts', (req, res, next) => {
+  try {
+    const newPost = {
+      id: posts.length + 1,
+      title: req.body.title,
+      content: req.body.content
+    };
+  
+    if (!newPost.title) {
+      const error = new Error('Please include a title');
+      error.status = 400;
+      throw error
+    };
+    if (!newPost.content) {
+      const error = new Error("Please don't leave an empty post");
+      error.status = 400;
+      throw error
+    }
+    posts.push(newPost);
+    res.status(201).json(newPost);
+  } catch (error) {
+    next(error)
+  }
+});
+
 export default postsRouter;
