@@ -71,4 +71,18 @@ postsRouter.put('/posts/:id', validatePost, (req, res, next) => {
   res.status(202).json(targetPost);
 });
 
+postsRouter.delete('/posts/:id', (req, res, next) => {
+  const id = parseInt(req.params.id);
+  const targetPost = posts.find(post => post.id === id);
+
+  if (!targetPost) {
+    const error  = new Error(`a post with the id of ${id} not found`);
+    error.status = 400;
+    return next(error);
+  };
+
+  posts = posts.filter(post => post.id !== id);
+  res.status(200).json(posts);
+});
+
 export default postsRouter;
