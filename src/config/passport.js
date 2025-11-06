@@ -9,7 +9,6 @@ passport.use(
       const user = await prisma.user.findFirst({
         where: {username}
       });
-
       if (!user) {
         return done(null, false, { message: 'User not found' });
       }
