@@ -1,5 +1,6 @@
 import prisma from '../prismaClient.js';
 
+
 export const getPosts = async (req, res, next) => {
   let posts = [];
   try {
