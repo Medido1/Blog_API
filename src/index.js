@@ -5,9 +5,16 @@ import passport from './config/passport.js';
 import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import prisma from './prismaClient.js';
+import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Allow requests from the frontend
+app.use(cors({
+  origin: 'http://localhost:5173', // React dev server
+  credentials: true, // allow cookies (needed for session)
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
