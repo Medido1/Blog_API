@@ -48,4 +48,12 @@ usersRouter.post('/login', (req, res, next) => {
   })(req, res, next)
 });
 
+usersRouter.get('/logout', (req, res, next) => {
+  req.logOut(err => {
+    if (err) return next(err);
+    res.status(200).json({ message: 'Logged out successfully' });
+  });
+});
+
+
 export default usersRouter;
