@@ -1,6 +1,9 @@
 import prisma from "../prismaClient.js";
 import bcrypt from "bcrypt";
 import passport from "../config/passport.js";
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -32,18 +35,24 @@ export const registerUser = async (req, res, next) => {
 // you MUST immediately invoke it with (req, res, next) 
 // to trigger the authentication and execute the custom logic.
 export const userLogin = (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
-      if (err) return next(err);
-      if (!user) {
-        return res.status(401).json({message: info.message})
-      }
-      // to enable session persistence
-      req.logIn(user, (err) => {
-        if (err) return next(err)
-        const { password, ...safeUser } = user;
-        return res.json({message: "Login succesful", user: safeUser})
-      })
-    })(req, res, next)
+  passport.authenticate("local", (err, user, info) => {
+    if (err) return next(err);
+    if (!user) {
+      return res.status(401).json({message: info.message})
+    }
+    const token = jwt.sign(
+      {id: user.id},
+      JWT_SECRET,
+      {expiresIn: '1d'}
+    );
+    const {password, ...safeUser} = user;
+
+    return res.json({
+      message: "login successful",
+      user: safeUser,
+      token: token
+    })
+  })(req, res, next)
 };
 
 export const userLogout = (req, res, next) => {
