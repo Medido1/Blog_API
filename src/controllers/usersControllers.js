@@ -68,6 +68,26 @@ export const authenticateJWT = (req, res, next) => {
   })
 }
 
+export const verifyToken = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {id: req.user.id},
+      select: {
+        id: true,
+        username: true,
+        password:false
+      }
+    })
+    if (!user){
+      return res.status(404).json({message: "User not found"})
+    }
+    res.json({user})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export const userLogout = (req, res, next) => {
   req.logOut(err => {
     if (err) return next(err);
